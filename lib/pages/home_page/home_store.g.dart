@@ -9,20 +9,20 @@ part of 'home_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars
 
 mixin _$HomeStore on _HomeStore, Store {
-  final _$isSelectAllAtom = Atom(name: '_HomeStore.isSelectAll');
+  final _$isLoadingAtom = Atom(name: '_HomeStore.isLoading');
 
   @override
-  bool get isSelectAll {
-    _$isSelectAllAtom.reportObserved();
-    return super.isSelectAll;
+  bool get isLoading {
+    _$isLoadingAtom.reportObserved();
+    return super.isLoading;
   }
 
   @override
-  set isSelectAll(bool value) {
-    _$isSelectAllAtom.context
-        .checkIfStateModificationsAreAllowed(_$isSelectAllAtom);
-    super.isSelectAll = value;
-    _$isSelectAllAtom.reportChanged();
+  set isLoading(bool value) {
+    _$isLoadingAtom.context
+        .checkIfStateModificationsAreAllowed(_$isLoadingAtom);
+    super.isLoading = value;
+    _$isLoadingAtom.reportChanged();
   }
 
   final _$todosAtom = Atom(name: '_HomeStore.todos');
@@ -75,16 +75,6 @@ mixin _$HomeStore on _HomeStore, Store {
     final _$actionInfo = _$_HomeStoreActionController.startAction();
     try {
       return super.initSelect();
-    } finally {
-      _$_HomeStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setSelectAll(bool v) {
-    final _$actionInfo = _$_HomeStoreActionController.startAction();
-    try {
-      return super.setSelectAll(v);
     } finally {
       _$_HomeStoreActionController.endAction(_$actionInfo);
     }

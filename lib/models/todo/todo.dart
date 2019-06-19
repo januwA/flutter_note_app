@@ -47,7 +47,11 @@ abstract class _Todo with Store {
     } else if (isOneDayAgo) {
       return '${createTime.month}月${createTime.day}号';
     } else {
-      return '${createTime.hour}:${createTime.minute}';
+      String hour = createTime.hour.toString();
+      hour = hour.length == 2 ? hour : '0' + hour;
+      String minute = createTime.minute.toString();
+      minute = minute.length == 2 ? minute : '0' + minute;
+      return '$hour:$minute';
     }
   }
 

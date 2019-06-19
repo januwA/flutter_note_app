@@ -20,66 +20,72 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notes List'),
+        title: Text('待办列表'),
       ),
       body: Observer(
-        builder: (_) => homeStore.todos.isEmpty
+        builder: (_) => homeStore.isLoading
             ? Center(
-                child: Text('暂无待办事项.'),
+                child: CircularProgressIndicator(),
               )
-            : ListView.builder(
-                itemCount: homeStore.todos.length,
-                itemBuilder: (context, index) {
-                  var todo = homeStore.todos[index];
-                  return Hero(
-                    tag: todo,
-                    child: Material(
-                      child: Observer(
-                        builder: (_) {
-                          return Dismissible(
-                            key: ValueKey(todo),
-                            onDismissed: (DismissDirection direction) =>
-                                homeStore.remove(todo),
-                            background: DismissibleBackground(
-                              padding: EdgeInsets.only(left: 14),
-                              alignment: Alignment.centerLeft,
-                            ),
-                            secondaryBackground: DismissibleBackground(
-                              padding: EdgeInsets.only(right: 14),
-                              alignment: Alignment.centerRight,
-                            ),
-                            child: ListTile(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return DetailPage(
-                                          homeStore: homeStore, todo: todo);
-                                    },
+            : homeStore.todos.isEmpty
+                ? Center(
+                    child: Text('暂无待办事项.'),
+                  )
+                : ListView.builder(
+                    itemCount: homeStore.todos.length,
+                    itemBuilder: (context, index) {
+                      var todo = homeStore.todos[index];
+                      return Hero(
+                        tag: todo,
+                        child: Material(
+                          child: Observer(
+                            builder: (_) {
+                              return Dismissible(
+                                key: ValueKey(todo),
+                                onDismissed: (DismissDirection direction) =>
+                                    homeStore.remove(todo),
+                                background: DismissibleBackground(
+                                  padding: EdgeInsets.only(left: 14),
+                                  alignment: Alignment.centerLeft,
+                                ),
+                                secondaryBackground: DismissibleBackground(
+                                  padding: EdgeInsets.only(right: 14),
+                                  alignment: Alignment.centerRight,
+                                ),
+                                child: ListTile(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return DetailPage(
+                                              homeStore: homeStore, todo: todo);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  onLongPress: () => onTodoLongPress(todo),
+                                  title: TodoTitle(todo: todo),
+                                  subtitle: TodoSubtitle(
+                                    todo: todo,
+                                    onTop: homeStore.updateTop,
                                   ),
-                                );
-                              },
-                              onLongPress: () => onTodoLongPress(todo),
-                              title: TodoTitle(todo: todo),
-                              subtitle: TodoSubtitle(
-                                todo: todo,
-                                onTop: homeStore.updateTop,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.of(context)
-              .push<Todo>(MaterialPageRoute(builder: (context) => AddPage()));
-          if (result == null) return false;
-          homeStore.oneAdd(result);
+        onPressed: () {
+          Navigator.of(context)
+              .push<Todo>(MaterialPageRoute(builder: (context) => AddPage()))
+              .then<Todo>((todo) {
+            homeStore.oneAdd(todo);
+            return;
+          });
         },
         child: Icon(Icons.add),
       ),
@@ -126,14 +132,14 @@ class DetailPage extends StatelessWidget {
         actions: <Widget>[
           Observer(
             builder: (_) => IconButton(
-                  icon: todo.isTop
-                      ? Icon(
-                          Icons.star,
-                          color: Colors.red[400],
-                        )
-                      : Icon(Icons.star_border),
-                  onPressed: () => homeStore.updateTop(todo),
-                ),
+              icon: todo.isTop
+                  ? Icon(
+                      Icons.star,
+                      color: Colors.red[400],
+                    )
+                  : Icon(Icons.star_border),
+              onPressed: () => homeStore.updateTop(todo),
+            ),
           ),
           IconButton(
             icon: Icon(Icons.delete_forever),

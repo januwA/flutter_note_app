@@ -16,6 +16,7 @@ abstract class _HomeStore with Store {
 
   @action
   init() async {
+    isLoading = true;
     String dbpath = join(await getDatabasesPath(), 'todos_database.db');
 
     ///打开数据库并存储引用。
@@ -28,7 +29,7 @@ abstract class _HomeStore with Store {
               id         INTEGER  PRIMARY KEY AUTOINCREMENT,
               title      TEXT     NOT NULL,
               content    TEXT     NOT NULL,
-              isTop      BOOLEAN  DEFAULT (false),
+              isTop      BOOLEAN  DEFAULT (0),
               createTime DATETIME DEFAULT (CURRENT_TIMESTAMP) 
           );
           """,
@@ -38,13 +39,14 @@ abstract class _HomeStore with Store {
     );
 
     todos = await todoAll();
+    isLoading = false;
     sort();
   }
 
   Future<Database> database;
 
   @observable
-  bool isSelectAll = false;
+  bool isLoading = true;
 
   @observable
   ObservableList<Todo> todos = ObservableList<Todo>();
@@ -69,11 +71,6 @@ abstract class _HomeStore with Store {
       ));
     }
     return todos;
-  }
-
-  @action
-  void setSelectAll(bool v) {
-    isSelectAll = v;
   }
 
   @action
