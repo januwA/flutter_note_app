@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_note_app/models/todo/todo.dart';
+import 'package:flutter_note_app/pages/add_page/add_page.dart';
+import 'package:flutter_note_app/pages/delete_page/delete_page.dart';
 import 'package:flutter_note_app/pages/home_page/home_store.dart';
+import 'package:flutter_note_app/shared/widgets/dismissible_background.dart';
+import 'package:flutter_note_app/shared/widgets/todo_subtitle.dart';
+import 'package:flutter_note_app/shared/widgets/todo_title.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,44 +28,50 @@ class _HomePageState extends State<HomePage> {
                 child: Text('暂无待办事项.'),
               )
             : ListView.builder(
+                itemCount: homeStore.todos.length,
                 itemBuilder: (context, index) {
                   var todo = homeStore.todos[index];
-                  return Observer(
-                    builder: (_) {
-                      return GestureDetector(
-                        onLongPress: () => homeStore.setSelectAll(true),
-                        child: Dismissible(
-                          key: ValueKey(todo),
-                          onDismissed: (DismissDirection direction) =>
-                              homeStore.remove(todo),
-                          background: DismissibleBackground(
-                            padding: EdgeInsets.only(left: 14),
-                            alignment: Alignment.centerLeft,
-                          ),
-                          secondaryBackground: DismissibleBackground(
-                            padding: EdgeInsets.only(right: 14),
-                            alignment: Alignment.centerRight,
-                          ),
-                          child: homeStore.isSelectAll
-                              ? ListTile(
-                                  leading: Checkbox(
-                                    value: todo.isSelect,
-                                    onChanged: (bool v) =>
-                                        homeStore.select(todo, v),
+                  return Hero(
+                    tag: todo,
+                    child: Material(
+                      child: Observer(
+                        builder: (_) {
+                          return Dismissible(
+                            key: ValueKey(todo),
+                            onDismissed: (DismissDirection direction) =>
+                                homeStore.remove(todo),
+                            background: DismissibleBackground(
+                              padding: EdgeInsets.only(left: 14),
+                              alignment: Alignment.centerLeft,
+                            ),
+                            secondaryBackground: DismissibleBackground(
+                              padding: EdgeInsets.only(right: 14),
+                              alignment: Alignment.centerRight,
+                            ),
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return DetailPage(
+                                          homeStore: homeStore, todo: todo);
+                                    },
                                   ),
-                                  title: buildTodoTitle(todo, context),
-                                  subtitle: buildTodoSubtitle(todo),
-                                )
-                              : ListTile(
-                                  title: buildTodoTitle(todo, context),
-                                  subtitle: buildTodoSubtitle(todo),
-                                ),
-                        ),
-                      );
-                    },
+                                );
+                              },
+                              onLongPress: () => onTodoLongPress(todo),
+                              title: TodoTitle(todo: todo),
+                              subtitle: TodoSubtitle(
+                                todo: todo,
+                                onTop: homeStore.updateTop,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   );
                 },
-                itemCount: homeStore.todos.length,
               ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -75,160 +86,89 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Padding buildTodoSubtitle(Todo todo) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: Row(
-        children: <Widget>[
-          Flexible(
-            fit: FlexFit.tight,
-            child: Text(
-              todo.content,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ),
-          InkWell(
-            onTap: () => homeStore.updateTop(todo),
-            child: todo.isTop
-                ? Icon(
-                    Icons.star,
-                    color: Colors.red[400],
-                  )
-                : Icon(
-                    Icons.star_border,
-                    color: Colors.grey[400],
-                  ),
-          ),
-        ],
+  /// 长按时
+  onTodoLongPress(Todo todo) {
+    homeStore.initSelect();
+    homeStore.select(todo, true);
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 400),
+        pageBuilder: (
+          BuildContext context,
+          Animation animation,
+          Animation secondaryAnimation,
+        ) {
+          /// 淡入
+          return FadeTransition(
+            opacity: animation,
+            child: DeletePage(homeStore: homeStore),
+          );
+        },
       ),
-    );
-  }
-
-  Row buildTodoTitle(Todo todo, BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Flexible(
-          fit: FlexFit.tight,
-          child: Text(
-            todo.title,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
-        ),
-        Text(
-          todo.createTimeString,
-          style: Theme.of(context).textTheme.subhead,
-        ),
-      ],
     );
   }
 }
 
-class DismissibleBackground extends StatelessWidget {
-  const DismissibleBackground({
+class DetailPage extends StatelessWidget {
+  const DetailPage({
     Key key,
-    @required this.padding,
-    this.alignment = Alignment.center,
+    @required this.homeStore,
+    @required this.todo,
   }) : super(key: key);
 
-  final EdgeInsetsGeometry padding;
-  final AlignmentGeometry alignment;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.red,
-      child: Align(
-        alignment: alignment,
-        child: Padding(
-          padding: padding,
-          child: Icon(Icons.delete_forever, color: Colors.white),
-        ),
-      ),
-    );
-  }
-}
-
-/// 添加待办事项page
-class AddPage extends StatefulWidget {
-  @override
-  _AddPageState createState() => _AddPageState();
-}
-
-class _AddPageState extends State<AddPage> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _contentController = TextEditingController();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _titleController.dispose();
-    _contentController.dispose();
-  }
+  final HomeStore homeStore;
+  final Todo todo;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('添加待办事项'),
         actions: <Widget>[
-          FlatButton(
-            child: Text('确定'),
+          Observer(
+            builder: (_) => IconButton(
+                  icon: todo.isTop
+                      ? Icon(
+                          Icons.star,
+                          color: Colors.red[400],
+                        )
+                      : Icon(Icons.star_border),
+                  onPressed: () => homeStore.updateTop(todo),
+                ),
+          ),
+          IconButton(
+            icon: Icon(Icons.delete_forever),
             onPressed: () {
-              if (_formKey.currentState.validate()) {
-                Navigator.of(context).pop(
-                  Todo(
-                    title: _titleController.text.trim(),
-                    content: _contentController.text.trim(),
-                  ),
-                );
-                _titleController.clear();
-                _contentController.clear();
-              }
+              homeStore.remove(todo);
+              Navigator.of(context).pop();
             },
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        autovalidate: true,
-        onWillPop: () async {
-          return true;
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                controller: _titleController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  hintText: "标题",
-                ),
-                validator: (String v) {
-                  return (v.isEmpty) ? '请输入标题!' : null;
-                },
+      body: ListView(
+        children: [
+          ListTile(
+            title: Text(
+              todo.title,
+              style: Theme.of(context).textTheme.display1,
+            ),
+            subtitle: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('${todo.createTime.toString().split('.').first}'),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      todo.content,
+                      style: Theme.of(context).textTheme.title,
+                    ),
+                  ),
+                ],
               ),
-              Flexible(
-                fit: FlexFit.tight,
-                child: TextFormField(
-                  controller: _contentController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "内容",
-                      contentPadding: EdgeInsets.only(top: 14.0)),
-                  maxLines: null,
-                  validator: (String v) {
-                    return (v.isEmpty) ? '请输入内容!' : null;
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

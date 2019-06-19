@@ -15,7 +15,7 @@ abstract class _HomeStore with Store {
   ObservableList<Todo> todos = ObservableList<Todo>()
     ..addAll([
       Todo(
-          title: "acreateTime.monthcreateTime.monthcreateTime.month",
+          title: "acreatcreateTth",
           content: "aaaa",
           isTop: true),
       Todo(
@@ -31,8 +31,18 @@ abstract class _HomeStore with Store {
     ]);
 
   @action
+  void initSelect() {
+    todos.forEach((Todo e) => e.isSelect = false);
+  }
+
+  @action
   void setSelectAll(bool v) {
     isSelectAll = v;
+  }
+
+  @action
+  void clearSelect() {
+    todos.removeWhere((Todo e) => e.isSelect);
   }
 
   @action

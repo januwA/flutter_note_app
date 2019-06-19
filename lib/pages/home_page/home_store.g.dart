@@ -43,10 +43,30 @@ mixin _$HomeStore on _HomeStore, Store {
   final _$_HomeStoreActionController = ActionController(name: '_HomeStore');
 
   @override
+  void initSelect() {
+    final _$actionInfo = _$_HomeStoreActionController.startAction();
+    try {
+      return super.initSelect();
+    } finally {
+      _$_HomeStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectAll(bool v) {
     final _$actionInfo = _$_HomeStoreActionController.startAction();
     try {
       return super.setSelectAll(v);
+    } finally {
+      _$_HomeStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearSelect() {
+    final _$actionInfo = _$_HomeStoreActionController.startAction();
+    try {
+      return super.clearSelect();
     } finally {
       _$_HomeStoreActionController.endAction(_$actionInfo);
     }
