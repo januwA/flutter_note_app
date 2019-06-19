@@ -5,12 +5,14 @@ class Todo = _Todo with _$Todo;
 
 abstract class _Todo with Store {
   _Todo({
+    this.id,
     this.title = '',
     this.content = '',
     this.isTop = false,
     DateTime createTime,
   }) : createTime = createTime ?? DateTime.now();
 
+  int id;
   @observable
   bool isSelect = false;
 
@@ -54,5 +56,15 @@ abstract class _Todo with Store {
     int a = isTop ? 1 : 0;
     int b = e.isTop ? 1 : 0;
     return a - b;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "title": title,
+      "content": content,
+      "isTop": isTop ? 1 : 0,
+      "createTime": createTime.toString(),
+    };
   }
 }

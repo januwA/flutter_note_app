@@ -40,6 +40,34 @@ mixin _$HomeStore on _HomeStore, Store {
     _$todosAtom.reportChanged();
   }
 
+  final _$initAsyncAction = AsyncAction('init');
+
+  @override
+  Future init() {
+    return _$initAsyncAction.run(() => super.init());
+  }
+
+  final _$oneAddAsyncAction = AsyncAction('oneAdd');
+
+  @override
+  Future<void> oneAdd(Todo todo) {
+    return _$oneAddAsyncAction.run(() => super.oneAdd(todo));
+  }
+
+  final _$updateTopAsyncAction = AsyncAction('updateTop');
+
+  @override
+  Future<void> updateTop(Todo todo) {
+    return _$updateTopAsyncAction.run(() => super.updateTop(todo));
+  }
+
+  final _$removeAsyncAction = AsyncAction('remove');
+
+  @override
+  Future<void> remove(Todo todo) {
+    return _$removeAsyncAction.run(() => super.remove(todo));
+  }
+
   final _$_HomeStoreActionController = ActionController(name: '_HomeStore');
 
   @override
@@ -83,40 +111,10 @@ mixin _$HomeStore on _HomeStore, Store {
   }
 
   @override
-  void oneAdd(Todo item) {
-    final _$actionInfo = _$_HomeStoreActionController.startAction();
-    try {
-      return super.oneAdd(item);
-    } finally {
-      _$_HomeStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void sort() {
     final _$actionInfo = _$_HomeStoreActionController.startAction();
     try {
       return super.sort();
-    } finally {
-      _$_HomeStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void updateTop(Todo todo) {
-    final _$actionInfo = _$_HomeStoreActionController.startAction();
-    try {
-      return super.updateTop(todo);
-    } finally {
-      _$_HomeStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void remove(Todo todo) {
-    final _$actionInfo = _$_HomeStoreActionController.startAction();
-    try {
-      return super.remove(todo);
     } finally {
       _$_HomeStoreActionController.endAction(_$actionInfo);
     }

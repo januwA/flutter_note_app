@@ -14,8 +14,7 @@ class TodoSubtitle extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8.0),
       child: Row(
         children: <Widget>[
-          Flexible(
-            fit: FlexFit.tight,
+          Expanded(
             child: Text(
               todo.content,
               overflow: TextOverflow.ellipsis,

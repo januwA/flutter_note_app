@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/models/todo/todo.dart';
 
@@ -26,8 +25,8 @@ class _AddPageState extends State<AddPage> {
       appBar: AppBar(
         title: Text('添加待办事项'),
         actions: <Widget>[
-          FlatButton(
-            child: Text('确定'),
+          IconButton(
+            icon: Icon(Icons.send),
             onPressed: () {
               if (_formKey.currentState.validate()) {
                 Navigator.of(context).pop(
