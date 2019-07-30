@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_note_app/models/todo/todo.dart';
+import 'package:flutter_note_app/store/main/main.store.dart';
 
 /// 添加待办事项page
 class AddPage extends StatefulWidget {
@@ -29,12 +29,11 @@ class _AddPageState extends State<AddPage> {
             icon: Icon(Icons.send),
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                Navigator.of(context).pop(
-                  Todo(
-                    title: _titleController.text.trim(),
-                    content: _contentController.text.trim(),
-                  ),
+                mainStore.todosService.todosDB.insertTask(
+                  title: _titleController.text.trim(),
+                  content: _contentController.text.trim(),
                 );
+                Navigator.of(context).pop();
                 _titleController.clear();
                 _contentController.clear();
               }
