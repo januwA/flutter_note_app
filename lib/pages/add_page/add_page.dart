@@ -29,7 +29,7 @@ class _AddPageState extends State<AddPage> {
             icon: Icon(Icons.send),
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                mainStore.todosService.todosDB.insertTask(
+                mainStore.todosService.todosDB.insertTodo(
                   title: _titleController.text.trim(),
                   content: _contentController.text.trim(),
                 );

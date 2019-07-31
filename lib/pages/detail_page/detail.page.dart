@@ -2,50 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
 
-class DetailPage extends StatefulWidget {
+class DetailPage extends StatelessWidget {
   const DetailPage({
     Key key,
     @required this.todo,
   }) : super(key: key);
 
   final Todo todo;
-
-  @override
-  _DetailPageState createState() => _DetailPageState();
-}
-
-class _DetailPageState extends State<DetailPage> {
-  bool isTop = false;
-  @override
-  void initState() {
-    super.initState();
-    isTop = widget.todo.isTop;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          IconButton(
-            icon: isTop
-                ? Icon(
-                    Icons.star,
-                    color: Colors.red[400],
-                  )
-                : Icon(Icons.star_border),
-            onPressed: () {
-              mainStore.todosService.todosDB
-                  .updateTask(widget.todo.copyWith(isTop: !widget.todo.isTop));
-              setState(() {
-                isTop = !isTop;
-              });
-            },
-          ),
+          StreamBuilder<Todo>(
+              stream: mainStore.todosService.todosDB.watchTodo(todo),
+              initialData: null,
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.active &&
+                    snap.hasData) {
+                  return IconButton(
+                    icon: snap.data.isTop
+                        ? Icon(
+                            Icons.star,
+                            color: Colors.red[400],
+                          )
+                        : Icon(Icons.star_border),
+                    onPressed: () {
+                      mainStore.todosService.todosDB
+                          .updateTodo(todo.copyWith(isTop: !snap.data.isTop));
+                    },
+                  );
+                } else {
+                  return SizedBox();
+                }
+              }),
           IconButton(
             icon: Icon(Icons.delete_forever),
             onPressed: () {
-              mainStore.todosService.todosDB.deleteTask(widget.todo);
+              mainStore.todosService.todosDB.deleteTodo(todo);
               Navigator.of(context).pop();
             },
           ),
@@ -55,7 +49,7 @@ class _DetailPageState extends State<DetailPage> {
         children: [
           ListTile(
             title: Text(
-              widget.todo.title,
+              todo.title,
               style: Theme.of(context).textTheme.display1,
             ),
             subtitle: Padding(
@@ -63,11 +57,11 @@ class _DetailPageState extends State<DetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('${widget.todo.createTime.toString().split('.').first}'),
+                  Text('${todo.createTime.toString().split('.').first}'),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      widget.todo.content,
+                      todo.content,
                       style: Theme.of(context).textTheme.title,
                     ),
                   ),

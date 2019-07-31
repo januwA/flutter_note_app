@@ -19,13 +19,18 @@ class TodosDatabase extends _$TodosDatabase {
   @override
   int get schemaVersion => 1;
 
-  Future<List<Todo>> get getAllTasks => select(todos).get();
+  Future<List<Todo>> get getAllTodos => select(todos).get();
 
   /// 每当基础数据发生变化时，都会发出新项
-  Stream<List<Todo>> watchAllTasks() => select(todos).watch();
+  Stream<List<Todo>> watchAllTodos() => select(todos).watch();
+
+  Stream<Todo> watchTodo(Todo todo) =>
+      (select(todos)..where((t) => t.id.equals(todo.id)))
+          .watch()
+          .map((List<Todo> todos) => todos[0]);
 
   /// 插入一条数据
-  Future<int> insertTask({
+  Future<int> insertTodo({
     String title,
     String content,
   }) =>
@@ -37,8 +42,8 @@ class TodosDatabase extends _$TodosDatabase {
       );
 
   /// 更新一条数据
-  Future<bool> updateTask(Todo todo) => update(todos).replace(todo);
+  Future<bool> updateTodo(Todo todo) => update(todos).replace(todo);
 
   /// 删除一条数据
-  Future<int> deleteTask(Todo todo) => delete(todos).delete(todo);
+  Future<int> deleteTodo(Todo todo) => delete(todos).delete(todo);
 }

@@ -8,7 +8,7 @@ class TodosService = _TodosService with _$TodosService;
 abstract class _TodosService with Store {
   final todosDB = TodosDatabase();
   Stream<List<Todo>> get todos$ =>
-      todosDB.watchAllTasks().map((List<Todo> todos) {
+      todosDB.watchAllTodos().map((List<Todo> todos) {
         todos.sort((a, b) => _getInt(b.isTop).compareTo(_getInt(a.isTop)));
         return todos;
       });

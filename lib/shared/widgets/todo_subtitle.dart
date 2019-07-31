@@ -23,7 +23,7 @@ class TodoSubtitle extends StatelessWidget {
           InkWell(
             onTap: () {
               mainStore.todosService.todosDB
-                  .updateTask(todo.copyWith(isTop: !todo.isTop));
+                  .updateTodo(todo.copyWith(isTop: !todo.isTop));
             },
             child: todo.isTop
                 ? Icon(
