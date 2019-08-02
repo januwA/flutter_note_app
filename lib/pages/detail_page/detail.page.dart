@@ -15,7 +15,7 @@ class DetailPage extends StatelessWidget {
       appBar: AppBar(
         actions: <Widget>[
           StreamBuilder<Todo>(
-              stream: mainStore.todosService.todosDB.watchTodo(todo),
+              stream: mainStore.todosService.watchTodo(todo),
               initialData: null,
               builder: (context, snap) {
                 if (snap.connectionState == ConnectionState.active &&
@@ -28,7 +28,7 @@ class DetailPage extends StatelessWidget {
                           )
                         : Icon(Icons.star_border),
                     onPressed: () {
-                      mainStore.todosService.todosDB
+                      mainStore.todosService
                           .updateTodo(todo.copyWith(isTop: !snap.data.isTop));
                     },
                   );
@@ -39,7 +39,7 @@ class DetailPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.delete_forever),
             onPressed: () {
-              mainStore.todosService.todosDB.deleteTodo(todo);
+              mainStore.todosService.deleteTodo(todo);
               Navigator.of(context).pop();
             },
           ),

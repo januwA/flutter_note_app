@@ -175,8 +175,11 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
   GeneratedDateTimeColumn get createTime =>
       _createTime ??= _constructCreateTime();
   GeneratedDateTimeColumn _constructCreateTime() {
-    return GeneratedDateTimeColumn('create_time', $tableName, false,
-        defaultValue: Constant(DateTime.now()));
+    return GeneratedDateTimeColumn(
+      'create_time',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _isTopMeta = const VerificationMeta('isTop');
@@ -272,6 +275,16 @@ abstract class _$TodosDatabase extends GeneratedDatabase {
       : super(const SqlTypeSystem.withDefaults(), e);
   $TodosTable _todos;
   $TodosTable get todos => _todos ??= $TodosTable(this);
+  TodoDao _todoDao;
+  TodoDao get todoDao => _todoDao ??= TodoDao(this as TodosDatabase);
   @override
   List<TableInfo> get allTables => [todos];
+}
+
+// **************************************************************************
+// DaoGenerator
+// **************************************************************************
+
+mixin _$TodoDaoMixin on DatabaseAccessor<TodosDatabase> {
+  $TodosTable get todos => db.todos;
 }

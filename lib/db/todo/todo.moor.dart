@@ -7,43 +7,42 @@ class Todos extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text()();
   TextColumn get content => text()();
-  DateTimeColumn get createTime =>
-      dateTime().withDefault(Constant(DateTime.now()))();
+  DateTimeColumn get createTime => dateTime()();
   BoolColumn get isTop => boolean().withDefault(const Constant(false))();
 }
 
-@UseMoor(tables: [Todos])
+@UseMoor(tables: [Todos], daos: [TodoDao])
 class TodosDatabase extends _$TodosDatabase {
   TodosDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite'));
   @override
   int get schemaVersion => 1;
+}
 
-  Future<List<Todo>> get getAllTodos => select(todos).get();
+@UseDao(
+  tables: [Todos],
+)
+class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
+  final TodosDatabase db;
+  TodoDao(this.db) : super(db);
 
   /// 每当基础数据发生变化时，都会发出新项
-  Stream<List<Todo>> watchAllTodos() => select(todos).watch();
+  Stream<List<Todo>> watchAllTodos() => (select(todos)
+        ..orderBy([
+          /// 把标星的排在前面
+          (t) => OrderingTerm(expression: t.isTop, mode: OrderingMode.desc),
+        ]))
+      .watch();
 
   Stream<Todo> watchTodo(Todo todo) =>
-      (select(todos)..where((t) => t.id.equals(todo.id)))
-          .watch()
-          .map((List<Todo> todos) => todos[0]);
+      (select(todos)..where((t) => t.id.equals(todo.id))).watchSingle();
 
   /// 插入一条数据
-  Future<int> insertTodo({
-    String title,
-    String content,
-  }) =>
-      into(todos).insert(
-        TodosCompanion(
-          title: Value(title),
-          content: Value(content),
-        ),
-      );
+  Future<int> insertTodo(Insertable<Todo> todo) => into(todos).insert(todo);
 
   /// 更新一条数据
-  Future<bool> updateTodo(Todo todo) => update(todos).replace(todo);
+  Future<bool> updateTodo(Insertable<Todo> todo) => update(todos).replace(todo);
 
   /// 删除一条数据
-  Future<int> deleteTodo(Todo todo) => delete(todos).delete(todo);
+  Future<int> deleteTodo(Insertable<Todo> todo) => delete(todos).delete(todo);
 }

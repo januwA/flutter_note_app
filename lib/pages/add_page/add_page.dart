@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
+import 'package:moor/moor.dart' as moor;
 
 /// 添加待办事项page
 class AddPage extends StatefulWidget {
@@ -29,9 +31,12 @@ class _AddPageState extends State<AddPage> {
             icon: Icon(Icons.send),
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                mainStore.todosService.todosDB.insertTodo(
-                  title: _titleController.text.trim(),
-                  content: _contentController.text.trim(),
+                mainStore.todosService.insertTodo(
+                  TodosCompanion(
+                    title: moor.Value(_titleController.text.trim()),
+                    content: moor.Value(_contentController.text.trim()),
+                    createTime: moor.Value(DateTime.now()),
+                  ),
                 );
                 Navigator.of(context).pop();
                 _titleController.clear();

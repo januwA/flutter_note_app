@@ -39,8 +39,7 @@ class _TodosPageState extends State<TodosPage> {
                             child: Dismissible(
                               key: ValueKey(todo),
                               onDismissed: (DismissDirection direction) =>
-                                  mainStore.todosService.todosDB
-                                      .deleteTodo(todo),
+                                  mainStore.todosService.deleteTodo(todo),
                               background: DismissibleBackground(
                                 padding: EdgeInsets.only(left: 14),
                                 alignment: Alignment.centerLeft,

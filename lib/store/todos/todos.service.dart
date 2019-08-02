@@ -1,17 +1,28 @@
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:mobx/mobx.dart';
+import 'package:moor/moor.dart';
 
 part 'todos.service.g.dart';
 
 class TodosService = _TodosService with _$TodosService;
 
 abstract class _TodosService with Store {
-  final todosDB = TodosDatabase();
-  Stream<List<Todo>> get todos$ =>
-      todosDB.watchAllTodos().map((List<Todo> todos) {
-        todos.sort((a, b) => _getInt(b.isTop).compareTo(_getInt(a.isTop)));
-        return todos;
-      });
+  final _todosDB = TodosDatabase();
+  TodoDao get _todoDao => _todosDB.todoDao;
 
-  int _getInt(bool b) => b ? 1 : 0;
+  Stream<List<Todo>> get todos$ => _todoDao.watchAllTodos();
+
+  Stream<Todo> watchTodo(Todo todo) => _todoDao.watchTodo(todo);
+
+  Future<int> insertTodo(Insertable<Todo> todo) {
+    return _todoDao.insertTodo(todo);
+  }
+
+  Future<bool> updateTodo(Insertable<Todo> todo) {
+    return _todoDao.updateTodo(todo);
+  }
+
+  Future<int> deleteTodo(Insertable<Todo> todo) {
+    return _todoDao.deleteTodo(todo);
+  }
 }
