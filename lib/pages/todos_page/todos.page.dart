@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/pages/add_page/add_page.dart';
 import 'package:flutter_note_app/pages/detail_page/detail.page.dart';
-import 'package:flutter_note_app/shared/widgets/dismissible_background.dart';
+import 'package:flutter_note_app/shared/widgets/app_drawer.dart';
 import 'package:flutter_note_app/shared/widgets/todo_subtitle.dart';
 import 'package:flutter_note_app/shared/widgets/todo_title.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TodosPage extends StatefulWidget {
+  static const routeName = '/TodosPage';
   @override
   _TodosPageState createState() => _TodosPageState();
 }
@@ -25,6 +27,9 @@ class _TodosPageState extends State<TodosPage> {
               appBar: AppBar(
                 title: Text('待办事项 #${todos.length}'),
               ),
+              drawer: AppDrawer(
+                pageName: TodosPage.routeName,
+              ),
               body: todos.isEmpty
                   ? Center(
                       child: Text('Not Todos.'),
@@ -33,35 +38,30 @@ class _TodosPageState extends State<TodosPage> {
                       itemCount: todos.length,
                       itemBuilder: (context, index) {
                         var todo = todos[index];
-                        return Hero(
-                          tag: todo,
-                          child: Material(
-                            child: Dismissible(
-                              key: ValueKey(todo),
-                              onDismissed: (DismissDirection direction) =>
-                                  mainStore.todosService.deleteTodo(todo),
-                              background: DismissibleBackground(
-                                padding: EdgeInsets.only(left: 14),
-                                alignment: Alignment.centerLeft,
-                              ),
-                              secondaryBackground: DismissibleBackground(
-                                padding: EdgeInsets.only(right: 14),
-                                alignment: Alignment.centerRight,
-                              ),
-                              child: ListTile(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return DetailPage(todo: todo);
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: TodoTitle(todo: todo),
-                                subtitle: TodoSubtitle(todo: todo),
-                              ),
+                        return Slidable(
+                          actionPane: SlidableDrawerActionPane(),
+                          actionExtentRatio: 0.25,
+                          secondaryActions: <Widget>[
+                            IconSlideAction(
+                              caption: '删除',
+                              color: Colors.red,
+                              icon: Icons.delete_forever,
+                              onTap: () =>
+                                  mainStore.todosService.removeTodo(todo),
                             ),
+                          ],
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return DetailPage(todo: todo);
+                                  },
+                                ),
+                              );
+                            },
+                            title: TodoTitle(todo: todo),
+                            subtitle: TodoSubtitle(todo: todo),
                           ),
                         );
                       },
@@ -75,9 +75,9 @@ class _TodosPageState extends State<TodosPage> {
               ),
             );
           } else if (snap.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
           } else {
-            return SizedBox();
+            return Scaffold(body: SizedBox());
           }
         });
   }

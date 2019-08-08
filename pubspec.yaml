@@ -1,9 +1,9 @@
 name: flutter_note_app
 description: 记事本app
-version: 1.0.2
+version: 1.0.3
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: '>=2.2.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -15,6 +15,10 @@ dependencies:
   sqflite:
   path:
   moor_flutter:
+  flutter_github_releases_service:
+    git:
+      url: git@github.com:januwA/flutter_github_releases_service.git
+  flutter_slidable:
 
 dev_dependencies:
   flutter_test:

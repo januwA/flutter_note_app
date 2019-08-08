@@ -10,7 +10,8 @@ abstract class _TodosService with Store {
   final _todosDB = TodosDatabase();
   TodoDao get _todoDao => _todosDB.todoDao;
 
-  Stream<List<Todo>> get todos$ => _todoDao.watchAllTodos();
+  Stream<List<Todo>> get todos$ => _todoDao.watchNotDeleteTodos();
+  Stream<List<Todo>> get deleteTodos$ => _todoDao.watchDeleteTodos();
 
   Stream<Todo> watchTodo(Todo todo) => _todoDao.watchTodo(todo);
 
@@ -22,7 +23,11 @@ abstract class _TodosService with Store {
     return _todoDao.updateTodo(todo);
   }
 
-  Future<int> deleteTodo(Insertable<Todo> todo) {
-    return _todoDao.deleteTodo(todo);
+  Future<int> removeTodo(Insertable<Todo> todo) {
+    return _todoDao.removeTodo(todo);
+  }
+
+  Future<int> unremoveTodo(Insertable<Todo> todo) {
+    return _todoDao.unremoveTodo(todo);
   }
 }
