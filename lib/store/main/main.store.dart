@@ -8,7 +8,7 @@ class MainStore = _MainStore with _$MainStore;
 
 abstract class _MainStore with Store {
   final todosService = TodosService();
-  final verSionService = VersionService();
+  final VersionService  verSionService = VersionService();
 }
 
 MainStore mainStore = MainStore();

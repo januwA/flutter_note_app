@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_github_releases_service/dto/github_releases/github_releases.dto.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/pages/delete_todos/delete_todos_page.dart';
 import 'package:flutter_note_app/pages/todos_page/todos.page.dart';
@@ -14,6 +13,7 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
+  var grs = mainStore.verSionService.grs;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -81,21 +81,18 @@ class _AppDrawerState extends State<AppDrawer> {
             },
           ),
           FutureBuilder(
-            future: Future.wait([
-              mainStore.verSionService.grs.isNeedUpdate,
-              mainStore.verSionService.grs.latest
-            ]),
-            builder: (context, AsyncSnapshot<List<Object>> snap) {
+            future: grs.isNeedUpdate,
+            builder: (context, AsyncSnapshot<bool> snap) {
               if (snap.connectionState == ConnectionState.done) {
-                bool isNeedUpdate = snap.data[0];
-                GithubReleasesDto latest = snap.data[1];
+                bool isNeedUpdate = snap.data;
+                var asset = grs.latestSync.assets.first;
                 return ListTile(
                   leading: Icon(Icons.update),
                   title: Text(isNeedUpdate ? '检查更新' : '暂无更新'),
                   onTap: () => isNeedUpdate
-                      ? mainStore.verSionService.grs.downloadApk(
-                          downloadUrl: latest.assets.first.browserDownloadUrl,
-                          apkName: latest.assets.first.name,
+                      ? grs.downloadApk(
+                          downloadUrl: asset.browserDownloadUrl,
+                          apkName: asset.name,
                         )
                       : null,
                 );
