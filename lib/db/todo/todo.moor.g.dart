@@ -14,13 +14,15 @@ class Todo extends DataClass implements Insertable<Todo> {
   final DateTime createTime;
   final bool isTop;
   final bool isDelete;
+  final int sort;
   Todo(
       {@required this.id,
       @required this.title,
       @required this.content,
       @required this.createTime,
       @required this.isTop,
-      @required this.isDelete});
+      @required this.isDelete,
+      @required this.sort});
   factory Todo.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -39,6 +41,7 @@ class Todo extends DataClass implements Insertable<Todo> {
       isTop: boolType.mapFromDatabaseResponse(data['${effectivePrefix}is_top']),
       isDelete:
           boolType.mapFromDatabaseResponse(data['${effectivePrefix}is_delete']),
+      sort: intType.mapFromDatabaseResponse(data['${effectivePrefix}sort']),
     );
   }
   factory Todo.fromJson(Map<String, dynamic> json,
@@ -50,6 +53,7 @@ class Todo extends DataClass implements Insertable<Todo> {
       createTime: serializer.fromJson<DateTime>(json['createTime']),
       isTop: serializer.fromJson<bool>(json['isTop']),
       isDelete: serializer.fromJson<bool>(json['isDelete']),
+      sort: serializer.fromJson<int>(json['sort']),
     );
   }
   @override
@@ -62,6 +66,7 @@ class Todo extends DataClass implements Insertable<Todo> {
       'createTime': serializer.toJson<DateTime>(createTime),
       'isTop': serializer.toJson<bool>(isTop),
       'isDelete': serializer.toJson<bool>(isDelete),
+      'sort': serializer.toJson<int>(sort),
     };
   }
 
@@ -82,6 +87,7 @@ class Todo extends DataClass implements Insertable<Todo> {
       isDelete: isDelete == null && nullToAbsent
           ? const Value.absent()
           : Value(isDelete),
+      sort: sort == null && nullToAbsent ? const Value.absent() : Value(sort),
     ) as T;
   }
 
@@ -91,7 +97,8 @@ class Todo extends DataClass implements Insertable<Todo> {
           String content,
           DateTime createTime,
           bool isTop,
-          bool isDelete}) =>
+          bool isDelete,
+          int sort}) =>
       Todo(
         id: id ?? this.id,
         title: title ?? this.title,
@@ -99,6 +106,7 @@ class Todo extends DataClass implements Insertable<Todo> {
         createTime: createTime ?? this.createTime,
         isTop: isTop ?? this.isTop,
         isDelete: isDelete ?? this.isDelete,
+        sort: sort ?? this.sort,
       );
   @override
   String toString() {
@@ -108,7 +116,8 @@ class Todo extends DataClass implements Insertable<Todo> {
           ..write('content: $content, ')
           ..write('createTime: $createTime, ')
           ..write('isTop: $isTop, ')
-          ..write('isDelete: $isDelete')
+          ..write('isDelete: $isDelete, ')
+          ..write('sort: $sort')
           ..write(')'))
         .toString();
   }
@@ -117,11 +126,13 @@ class Todo extends DataClass implements Insertable<Todo> {
   int get hashCode => $mrjf($mrjc(
       $mrjc(
           $mrjc(
-              $mrjc($mrjc($mrjc(0, id.hashCode), title.hashCode),
-                  content.hashCode),
-              createTime.hashCode),
-          isTop.hashCode),
-      isDelete.hashCode));
+              $mrjc(
+                  $mrjc($mrjc($mrjc(0, id.hashCode), title.hashCode),
+                      content.hashCode),
+                  createTime.hashCode),
+              isTop.hashCode),
+          isDelete.hashCode),
+      sort.hashCode));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -131,7 +142,8 @@ class Todo extends DataClass implements Insertable<Todo> {
           other.content == content &&
           other.createTime == createTime &&
           other.isTop == isTop &&
-          other.isDelete == isDelete);
+          other.isDelete == isDelete &&
+          other.sort == sort);
 }
 
 class TodosCompanion extends UpdateCompanion<Todo> {
@@ -141,6 +153,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
   final Value<DateTime> createTime;
   final Value<bool> isTop;
   final Value<bool> isDelete;
+  final Value<int> sort;
   const TodosCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
@@ -148,6 +161,7 @@ class TodosCompanion extends UpdateCompanion<Todo> {
     this.createTime = const Value.absent(),
     this.isTop = const Value.absent(),
     this.isDelete = const Value.absent(),
+    this.sort = const Value.absent(),
   });
 }
 
@@ -218,9 +232,18 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
         defaultValue: const Constant(false));
   }
 
+  final VerificationMeta _sortMeta = const VerificationMeta('sort');
+  GeneratedIntColumn _sort;
+  @override
+  GeneratedIntColumn get sort => _sort ??= _constructSort();
+  GeneratedIntColumn _constructSort() {
+    return GeneratedIntColumn('sort', $tableName, false,
+        defaultValue: const Constant(0));
+  }
+
   @override
   List<GeneratedColumn> get $columns =>
-      [id, title, content, createTime, isTop, isDelete];
+      [id, title, content, createTime, isTop, isDelete, sort];
   @override
   $TodosTable get asDslTable => this;
   @override
@@ -266,6 +289,12 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
     } else if (isDelete.isRequired && isInserting) {
       context.missing(_isDeleteMeta);
     }
+    if (d.sort.present) {
+      context.handle(
+          _sortMeta, sort.isAcceptableValue(d.sort.value, _sortMeta));
+    } else if (sort.isRequired && isInserting) {
+      context.missing(_sortMeta);
+    }
     return context;
   }
 
@@ -297,6 +326,9 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
     }
     if (d.isDelete.present) {
       map['is_delete'] = Variable<bool, BoolType>(d.isDelete.value);
+    }
+    if (d.sort.present) {
+      map['sort'] = Variable<int, IntType>(d.sort.value);
     }
     return map;
   }

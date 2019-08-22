@@ -15,7 +15,7 @@ abstract class _TodosService with Store {
 
   Stream<Todo> watchTodo(Todo todo) => _todoDao.watchTodo(todo);
 
-  Future<int> insertTodo(Insertable<Todo> todo) {
+  insertTodo(Insertable<Todo> todo) {
     return _todoDao.insertTodo(todo);
   }
 
