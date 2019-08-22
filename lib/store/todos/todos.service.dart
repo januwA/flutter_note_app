@@ -19,6 +19,10 @@ abstract class _TodosService with Store {
     return _todoDao.insertTodo(todo);
   }
 
+  deleteTodo(Insertable<Todo> todo) {
+    _todoDao.deleteTodo(todo);
+  }
+
   Future<bool> updateTodo(Insertable<Todo> todo) {
     return _todoDao.updateTodo(todo);
   }
@@ -29,5 +33,11 @@ abstract class _TodosService with Store {
 
   Future<int> unremoveTodo(Insertable<Todo> todo) {
     return _todoDao.unremoveTodo(todo);
+  }
+
+  updateSort(Todo oldTodo, Todo newTodo, bool isLast) {
+    // 顶置的只能和顶置的排序, 反之亦然
+    if (oldTodo.isTop != newTodo.isTop) return null;
+    return _todoDao.updateSort(oldTodo, newTodo, isLast);
   }
 }

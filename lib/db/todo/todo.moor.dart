@@ -81,7 +81,6 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
   /// 插入一条数据
   /// v3: 插入时把sort字段设置为id字段
   insertTodo(Insertable<Todo> todo) {
-    // return into(todos).insert(todo);
     return transaction((_) async {
       final insertedId = await into(todos).insert(todo);
       await customUpdate('UPDATE todos SET sort = id WHERE id = ?',
@@ -108,4 +107,23 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
           isDelete: Value(false),
         ),
       );
+
+  updateSort(Todo oldTodo, Todo newTodo, bool isLast) async {
+    if (isLast) {
+      await (update(todos)..where((t) => t.id.equals(oldTodo.id))).write(
+        TodosCompanion(
+          sort: Value(newTodo.sort + 1),
+        ),
+      );
+    } else {
+      await customUpdate('UPDATE todos SET sort = sort + 1 WHERE sort >= ?',
+          variables: [Variable.withInt(newTodo.sort)]);
+
+      await (update(todos)..where((t) => t.id.equals(oldTodo.id))).write(
+        TodosCompanion(
+          sort: Value(newTodo.sort),
+        ),
+      );
+    }
+  }
 }

@@ -34,37 +34,19 @@ class _TodosPageState extends State<TodosPage> {
                   ? Center(
                       child: Text('Not Todos.'),
                     )
-                  : ListView.builder(
-                      itemCount: todos.length,
-                      itemBuilder: (context, index) {
-                        var todo = todos[index];
-                        return Slidable(
-                          actionPane: SlidableDrawerActionPane(),
-                          actionExtentRatio: 0.25,
-                          secondaryActions: <Widget>[
-                            IconSlideAction(
-                              caption: '删除',
-                              color: Colors.red,
-                              icon: Icons.delete_forever,
-                              onTap: () =>
-                                  mainStore.todosService.removeTodo(todo),
-                            ),
-                          ],
-                          child: ListTile(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return DetailPage(todo: todo);
-                                  },
-                                ),
-                              );
-                            },
-                            title: TodoTitle(todo: todo),
-                            subtitle: TodoSubtitle(todo: todo),
-                          ),
-                        );
+                  : ReorderableListView(
+                      onReorder: (int oldIndex, int newIndex) {
+                        bool isLast = false;
+                        if (newIndex >= todos.length) {
+                          newIndex = todos.length - 1;
+                          isLast = true;
+                        }
+                        Todo oldTodo = todos[oldIndex];
+                        Todo newTodo = todos[newIndex];
+                        mainStore.todosService.updateSort(oldTodo, newTodo, isLast);
                       },
+                      children:
+                          todos.map((t) => _todoItemView(t, context)).toList(),
                     ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
@@ -80,5 +62,34 @@ class _TodosPageState extends State<TodosPage> {
             return Scaffold(body: SizedBox());
           }
         });
+  }
+
+  Slidable _todoItemView(Todo todo, BuildContext context) {
+    return Slidable(
+      key: ValueKey(todo.id),
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.25,
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: '删除',
+          color: Colors.red,
+          icon: Icons.delete_forever,
+          onTap: () => mainStore.todosService.removeTodo(todo),
+        ),
+      ],
+      child: ListTile(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return DetailPage(todo: todo);
+              },
+            ),
+          );
+        },
+        title: TodoTitle(todo: todo),
+        subtitle: TodoSubtitle(todo: todo),
+      ),
+    );
   }
 }

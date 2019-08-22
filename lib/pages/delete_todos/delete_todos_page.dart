@@ -47,6 +47,12 @@ class _DeleteTodosPageState extends State<DeleteTodosPage> {
                         icon: Icons.restore_from_trash,
                         onTap: () => mainStore.todosService.unremoveTodo(todo),
                       ),
+                      IconSlideAction(
+                        caption: '移除',
+                        color: Colors.red,
+                        icon: Icons.delete,
+                        onTap: () => mainStore.todosService.deleteTodo(todo),
+                      ),
                     ],
                   );
                 },
