@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
-import 'package:flutter_note_app/pages/delete_todos/delete_todos_page.dart';
 import 'package:flutter_note_app/pages/todos_page/todos.page.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
 
@@ -42,10 +41,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     Navigator.of(context).pop();
                     if (widget.pageName != TodosPage.routeName) {
                       /// 清理所有旧路由，并跳转到新路由
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (_) => TodosPage()),
-                        (Route<dynamic> route) => false,
-                      );
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/todos', (_) => false);
                     }
                   },
                   leading: Icon(Icons.power),
@@ -64,12 +61,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 List<Todo> dts = snapshot.data;
                 return ListTile(
                   onTap: () {
-                    Navigator.of(context).pop();
-                    if (widget.pageName != DeleteTodosPage.routeName) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => DeleteTodosPage(),
-                      ));
-                    }
+                    Navigator.of(context).popAndPushNamed('/delete-todos');
                   },
                   leading: Icon(Icons.delete),
                   title: Text('已删除待办事项'),
@@ -80,28 +72,38 @@ class _AppDrawerState extends State<AppDrawer> {
               return SizedBox();
             },
           ),
-          FutureBuilder(
-            future: grs.isNeedUpdate,
-            builder: (context, AsyncSnapshot<bool> snap) {
-              if (snap.connectionState == ConnectionState.done) {
-                bool isNeedUpdate = snap.data;
-                var asset = grs.latestSync.assets.first;
-                return ListTile(
-                  leading: Icon(Icons.update),
-                  title: Text(isNeedUpdate ? '检查更新' : '暂无更新'),
-                  onTap: () => isNeedUpdate
-                      ? grs.downloadApk(
-                          downloadUrl: asset.browserDownloadUrl,
-                          apkName: asset.name,
-                        )
-                      : null,
-                );
-              }
-              return SizedBox();
-            },
-          ),
+          _updateApkWidget(),
         ],
       ),
+    );
+  }
+
+  Widget _updateApkWidget() {
+    return FutureBuilder(
+      future: grs.initialized,
+      builder: (context, AsyncSnapshot<bool> snap) =>
+          snap.connectionState == ConnectionState.done
+              ? FutureBuilder(
+                  future: grs.isNeedUpdate,
+                  builder: (context, AsyncSnapshot<bool> snap) {
+                    if (snap.connectionState == ConnectionState.done) {
+                      bool isNeedUpdate = snap.data;
+                      var asset = grs.latestSync.assets.first;
+                      return ListTile(
+                        leading: Icon(Icons.update),
+                        title: Text(isNeedUpdate ? '检查更新' : '暂无更新'),
+                        onTap: () => isNeedUpdate
+                            ? grs.downloadApk(
+                                downloadUrl: asset.browserDownloadUrl,
+                                apkName: asset.name,
+                              )
+                            : null,
+                      );
+                    }
+                    return SizedBox();
+                  },
+                )
+              : SizedBox(),
     );
   }
 }
