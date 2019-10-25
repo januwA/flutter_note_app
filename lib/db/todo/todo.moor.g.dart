@@ -6,7 +6,7 @@ part of 'todo.moor.dart';
 // MoorGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps
+// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Todo extends DataClass implements Insertable<Todo> {
   final int id;
   final String title;
@@ -71,7 +71,7 @@ class Todo extends DataClass implements Insertable<Todo> {
   }
 
   @override
-  T createCompanion<T extends UpdateCompanion<Todo>>(bool nullToAbsent) {
+  TodosCompanion createCompanion(bool nullToAbsent) {
     return TodosCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       title:
@@ -88,7 +88,7 @@ class Todo extends DataClass implements Insertable<Todo> {
           ? const Value.absent()
           : Value(isDelete),
       sort: sort == null && nullToAbsent ? const Value.absent() : Value(sort),
-    ) as T;
+    );
   }
 
   Todo copyWith(
@@ -124,26 +124,26 @@ class Todo extends DataClass implements Insertable<Todo> {
 
   @override
   int get hashCode => $mrjf($mrjc(
+      id.hashCode,
       $mrjc(
+          title.hashCode,
           $mrjc(
+              content.hashCode,
               $mrjc(
-                  $mrjc($mrjc($mrjc(0, id.hashCode), title.hashCode),
-                      content.hashCode),
-                  createTime.hashCode),
-              isTop.hashCode),
-          isDelete.hashCode),
-      sort.hashCode));
+                  createTime.hashCode,
+                  $mrjc(isTop.hashCode,
+                      $mrjc(isDelete.hashCode, sort.hashCode)))))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
       (other is Todo &&
-          other.id == id &&
-          other.title == title &&
-          other.content == content &&
-          other.createTime == createTime &&
-          other.isTop == isTop &&
-          other.isDelete == isDelete &&
-          other.sort == sort);
+          other.id == this.id &&
+          other.title == this.title &&
+          other.content == this.content &&
+          other.createTime == this.createTime &&
+          other.isTop == this.isTop &&
+          other.isDelete == this.isDelete &&
+          other.sort == this.sort);
 }
 
 class TodosCompanion extends UpdateCompanion<Todo> {
@@ -163,6 +163,35 @@ class TodosCompanion extends UpdateCompanion<Todo> {
     this.isDelete = const Value.absent(),
     this.sort = const Value.absent(),
   });
+  TodosCompanion.insert({
+    this.id = const Value.absent(),
+    @required String title,
+    @required String content,
+    @required DateTime createTime,
+    this.isTop = const Value.absent(),
+    this.isDelete = const Value.absent(),
+    this.sort = const Value.absent(),
+  })  : title = Value(title),
+        content = Value(content),
+        createTime = Value(createTime);
+  TodosCompanion copyWith(
+      {Value<int> id,
+      Value<String> title,
+      Value<String> content,
+      Value<DateTime> createTime,
+      Value<bool> isTop,
+      Value<bool> isDelete,
+      Value<int> sort}) {
+    return TodosCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      createTime: createTime ?? this.createTime,
+      isTop: isTop ?? this.isTop,
+      isDelete: isDelete ?? this.isDelete,
+      sort: sort ?? this.sort,
+    );
+  }
 }
 
 class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
@@ -174,7 +203,8 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
   @override
   GeneratedIntColumn get id => _id ??= _constructId();
   GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false, hasAutoIncrement: true);
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
   final VerificationMeta _titleMeta = const VerificationMeta('title');
@@ -340,8 +370,7 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
 }
 
 abstract class _$TodosDatabase extends GeneratedDatabase {
-  _$TodosDatabase(QueryExecutor e)
-      : super(const SqlTypeSystem.withDefaults(), e);
+  _$TodosDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $TodosTable _todos;
   $TodosTable get todos => _todos ??= $TodosTable(this);
   TodoDao _todoDao;

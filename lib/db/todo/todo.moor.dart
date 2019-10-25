@@ -37,9 +37,9 @@ class TodosDatabase extends _$TodosDatabase {
           await m.addColumn(todos, todos.sort);
         }
       },
-      beforeOpen: (QueryEngine db, OpeningDetails details) async {
+      beforeOpen: (OpeningDetails details) async {
         if (details.wasCreated) {
-          List<Todo> todosData = await db.select(todos).get();
+          List<Todo> todosData = await this.select(todos).get();
           for (var t in todosData) {
             await customUpdate('UPDATE todos SET sort = id WHERE id = ?',
                 variables: [Variable.withInt(t.id)]);
@@ -81,7 +81,7 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
   /// 插入一条数据
   /// v3: 插入时把sort字段设置为id字段
   insertTodo(Insertable<Todo> todo) {
-    return transaction((_) async {
+    return transaction(() async {
       final insertedId = await into(todos).insert(todo);
       await customUpdate('UPDATE todos SET sort = id WHERE id = ?',
           variables: [Variable.withInt(insertedId)]);

@@ -10,12 +10,13 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^0.1.2
-  mobx:
-  flutter_mobx:
-  path:
-  moor_flutter:
-  flutter_github_releases_service:
-  flutter_slidable:
+  mobx: ^0.3.9
+  flutter_mobx: ^0.3.3+1
+  path: ^1.6.4
+  moor_flutter: ^2.0.0
+  flutter_github_releases_service: ^0.4.0
+  flutter_slidable: ^0.5.4
+  flutter_ajanuw_router: ^0.2.2
 
 dev_dependencies:
   flutter_test:
