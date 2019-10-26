@@ -94,6 +94,15 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
   /// 删除一条数据
   Future<int> deleteTodo(Insertable<Todo> todo) => delete(todos).delete(todo);
 
+  /// 删除多条数据
+  void deleteTodos(List<int> dtodoIds) {
+    delete(todos)
+      ..where(
+        (t) => isIn(t.id, dtodoIds),
+      )
+      ..go();
+  }
+
   /// 软删除
   removeTodo(Todo todo) =>
       (update(todos)..where((t) => t.id.equals(todo.id))).write(

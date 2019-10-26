@@ -13,39 +13,14 @@ class DeleteTodosPage extends StatefulWidget {
 }
 
 class _DeleteTodosPageState extends State<DeleteTodosPage> {
-  List<DeleteTodo> deleteTodos;
-  bool _isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('已删除待办事项'),
-        actions: <Widget>[
-          AnimatedSwitcher(
-            duration: Duration(seconds: 1),
-            child: _isChecked
-                ? IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      List<DeleteTodo> dtodos =
-                          deleteTodos.where((dt) => dt.value).toList();
-                      for (var dtodo in dtodos) {
-                        mainStore.todosService.deleteTodo(dtodo.todo);
-                      }
-                      setState(() {
-                        deleteTodos.removeWhere((dt) => dt.value);
-                        _isChecked = false;
-                      });
-                    },
-                  )
-                : SizedBox(),
-          ),
-        ],
+        title: Text('已删除事项'),
       ),
       drawer: AppDrawer(pageName: DeleteTodosPage.routeName),
-      body: deleteTodos == null || deleteTodos.isEmpty
-          ? _initDataWidget()
-          : _buildDeleteTodosListView(),
+      body: _initDataWidget(),
     );
   }
 
@@ -64,15 +39,16 @@ class _DeleteTodosPageState extends State<DeleteTodosPage> {
               child: Text('not data.'),
             );
           }
-          deleteTodos = todos.map((todo) => DeleteTodo(todo)).toList();
-          return _buildDeleteTodosListView();
+          List<DeleteTodo> deleteTodos =
+              todos.map((todo) => DeleteTodo(todo)).toList();
+          return _buildDeleteTodosListView(deleteTodos);
         }
         return SizedBox();
       },
     );
   }
 
-  ListView _buildDeleteTodosListView() {
+  ListView _buildDeleteTodosListView(List<DeleteTodo> deleteTodos) {
     return ListView.builder(
       itemCount: deleteTodos.length,
       itemBuilder: (context, index) {
@@ -80,28 +56,17 @@ class _DeleteTodosPageState extends State<DeleteTodosPage> {
         return Slidable(
           actionPane: SlidableDrawerActionPane(),
           actionExtentRatio: 0.25,
-          child: AnimatedSwitcher(
-            duration: Duration(seconds: 1),
-            child: _isChecked
-                ? CheckboxListTile(
-                    value: dtodo.value,
-                    title: TodoTitle(todo: dtodo.todo),
-                    subtitle: TodoSubtitle(todo: dtodo.todo),
-                    onChanged: (bool value) {
-                      setState(() {
-                        dtodo.value = value;
-                      });
-                    },
-                  )
-                : ListTile(
-                    title: TodoTitle(todo: dtodo.todo),
-                    subtitle: TodoSubtitle(todo: dtodo.todo),
-                    onLongPress: () {
-                      setState(() {
-                        _isChecked = true;
-                      });
-                    },
-                  ),
+          child: ListTile(
+            title: TodoTitle(todo: dtodo.todo),
+            subtitle: TodoSubtitle(todo: dtodo.todo),
+            onLongPress: () {
+              setState(() {
+                dtodo.value = true;
+              });
+
+              Navigator.of(context)
+                  .pushNamed('/batch-delete-todos', arguments: deleteTodos);
+            },
           ),
           secondaryActions: <Widget>[
             IconSlideAction(

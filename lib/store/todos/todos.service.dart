@@ -23,6 +23,10 @@ abstract class _TodosService with Store {
     _todoDao.deleteTodo(todo);
   }
 
+  void deleteTodos(List<int> dtodoIds) {
+    _todoDao.deleteTodos(dtodoIds);
+  }
+
   Future<bool> updateTodo(Insertable<Todo> todo) {
     return _todoDao.updateTodo(todo);
   }
