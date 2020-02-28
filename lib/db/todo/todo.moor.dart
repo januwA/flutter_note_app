@@ -28,7 +28,7 @@ class TodosDatabase extends _$TodosDatabase {
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) {
-        return m.createAllTables();
+        return m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
         if (from == 1) {
@@ -98,7 +98,8 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
   void deleteTodos(List<int> dtodoIds) {
     delete(todos)
       ..where(
-        (t) => isIn(t.id, dtodoIds),
+        // (t) => isIn(t.id, dtodoIds),
+        (t) => t.id.isIn(dtodoIds),
       )
       ..go();
   }

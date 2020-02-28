@@ -8,6 +8,8 @@ import 'package:flutter_note_app/pages/detail_page/detail.page.dart';
 import 'package:flutter_note_app/pages/not-found/not-found.dart';
 import 'package:flutter_note_app/pages/todos_page/todos.page.dart';
 
+import '../db/todo/todo.moor.dart';
+
 AjanuwRouter router = AjanuwRouter();
 
 final List<AjanuwRoute> routes = [
@@ -20,10 +22,30 @@ final List<AjanuwRoute> routes = [
     builder: (context, r) => TodosPage(),
   ),
   AjanuwRoute(
-    path: 'add-todo',
-    builder: (context, r) => AddPage(),
-  ),
-  AjanuwRoute(
+      path: 'add-todo',
+      builder: (context, r) => AddPage(),
+      transitionDuration: Duration(milliseconds: 500),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
+
+        return SlideTransition(
+          position: Tween(
+            begin: Offset(0.0, 0.7),
+            end: Offset.zero,
+          ).animate(curvedAnimation),
+          child: ScaleTransition(
+            scale: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(curvedAnimation),
+            child: child,
+          ),
+        );
+      }),
+  AjanuwRoute<Todo>(
     path: 'detail-todo',
     builder: (context, r) => DetailPage(todo: r.arguments),
   ),
@@ -31,7 +53,7 @@ final List<AjanuwRoute> routes = [
     path: 'delete-todos',
     builder: (context, r) => DeleteTodosPage(),
   ),
-  AjanuwRoute(
+  AjanuwRoute<List<DeleteTodo>>(
     path: 'batch-delete-todos',
     builder: (c, r) => BatchDeleteTodos(deleteTodos: r.arguments),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {

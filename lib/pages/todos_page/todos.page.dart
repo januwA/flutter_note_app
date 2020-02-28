@@ -19,44 +19,45 @@ class _TodosPageState extends State<TodosPage> {
       stream: mainStore.todosService.todos$,
       initialData: List<Todo>(),
       builder: (context, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
-          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        switch (snap.connectionState) {
+          case ConnectionState.waiting:
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          case ConnectionState.active:
+            return _buildBody(snap.data);
+          default:
+            return Scaffold(body: SizedBox());
         }
-
-        if (snap.connectionState == ConnectionState.active) {
-          final List<Todo> todos = snap.data;
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('待办事项 #${todos.length}'),
-            ),
-            drawer: AppDrawer(
-              pageName: TodosPage.routeName,
-            ),
-            body: todos.isEmpty
-                ? Center(child: Text('Not Todos.'))
-                : ReorderableListView(
-                    onReorder: (int oldIndex, int newIndex) {
-                      bool isLast = false;
-                      if (newIndex >= todos.length) {
-                        newIndex = todos.length - 1;
-                        isLast = true;
-                      }
-                      Todo oldTodo = todos[oldIndex];
-                      Todo newTodo = todos[newIndex];
-                      mainStore.todosService
-                          .updateSort(oldTodo, newTodo, isLast);
-                    },
-                    children:
-                        todos.map((t) => _todoItemView(t, context)).toList(),
-                  ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => Navigator.of(context).pushNamed('/add-todo'),
-              child: Icon(Icons.add),
-            ),
-          );
-        }
-        return Scaffold(body: SizedBox());
       },
+    );
+  }
+
+  _buildBody(List<Todo> todos) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('待办事项 #${todos.length}'),
+      ),
+      drawer: AppDrawer(
+        pageName: TodosPage.routeName,
+      ),
+      body: todos.isEmpty
+          ? Center(child: Text('Not Todos.'))
+          : ReorderableListView(
+              onReorder: (int oldIndex, int newIndex) {
+                bool isLast = false;
+                if (newIndex >= todos.length) {
+                  newIndex = todos.length - 1;
+                  isLast = true;
+                }
+                Todo oldTodo = todos[oldIndex];
+                Todo newTodo = todos[newIndex];
+                mainStore.todosService.updateSort(oldTodo, newTodo, isLast);
+              },
+              children: todos.map((t) => _todoItemView(t, context)).toList(),
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).pushNamed('/add-todo'),
+        child: Icon(Icons.add),
+      ),
     );
   }
 
