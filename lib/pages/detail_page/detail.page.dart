@@ -39,7 +39,7 @@ class DetailPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.delete_forever),
             onPressed: () {
-              mainStore.todosService.removeTodo(todo);
+              mainStore.todosService.removeTodo(todo.id);
               Navigator.of(context).pop();
             },
           ),

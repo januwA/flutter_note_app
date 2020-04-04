@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
-import 'package:moor/moor.dart' as moor;
 
 /// 添加待办事项page
 class AddPage extends StatefulWidget {
@@ -11,7 +10,7 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   TextEditingController _titleController = TextEditingController();
-  TextEditingController _contentController = TextEditingController();
+  TextEditingController _contentController = TextEditingController(text: "");
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -31,13 +30,12 @@ class _AddPageState extends State<AddPage> {
             icon: Icon(Icons.send),
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                mainStore.todosService.insertTodo(
-                  TodosCompanion(
-                    title: moor.Value(_titleController.text.trim()),
-                    content: moor.Value(_contentController.text.trim()),
-                    createTime: moor.Value(DateTime.now()),
-                  ),
+                var newTodo = TodosCompanion.insert(
+                  title: _titleController.text.trim(),
+                  content: _contentController.text.trim(),
+                  createTime: DateTime.now(),
                 );
+                mainStore.todosService.insertTodo(newTodo);
                 Navigator.of(context).pop();
                 _titleController.clear();
                 _contentController.clear();
@@ -76,9 +74,6 @@ class _AddPageState extends State<AddPage> {
                       hintText: "内容",
                       contentPadding: EdgeInsets.only(top: 14.0)),
                   maxLines: null,
-                  validator: (String v) {
-                    return (v.isEmpty) ? '请输入内容!' : null;
-                  },
                 ),
               ),
             ],

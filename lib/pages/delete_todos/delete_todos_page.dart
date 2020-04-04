@@ -73,13 +73,13 @@ class _DeleteTodosPageState extends State<DeleteTodosPage> {
               caption: '恢复',
               color: Colors.green,
               icon: Icons.restore_from_trash,
-              onTap: () => mainStore.todosService.unremoveTodo(dtodo.todo),
+              onTap: () => mainStore.todosService.unremoveTodo(dtodo.todo.id),
             ),
             IconSlideAction(
               caption: '移除',
               color: Colors.red,
               icon: Icons.delete,
-              onTap: () => mainStore.todosService.deleteTodo(dtodo.todo),
+              onTap: () => mainStore.todosService.deleteTodo(dtodo.todo.id),
             ),
           ],
         );

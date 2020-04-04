@@ -31,16 +31,38 @@ class _TodosPageState extends State<TodosPage> {
     );
   }
 
+  Widget _buildNotTodo() {
+    var style = TextStyle(fontSize: 16, color: Colors.grey[600]);
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: Image.asset(
+              'assets/note.png',
+              width: 120,
+              height: 120,
+            ),
+          ),
+          Text('点击右下方的按钮', style: style),
+          SizedBox(height: 6),
+          Text('以创建备注', style: style),
+        ],
+      ),
+    );
+  }
+
   _buildBody(List<Todo> todos) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('待办事项 #${todos.length}'),
+        title: Text('备注列表 #${todos.length}'),
       ),
       drawer: AppDrawer(
         pageName: TodosPage.routeName,
       ),
       body: todos.isEmpty
-          ? Center(child: Text('Not Todos.'))
+          ? _buildNotTodo()
           : ReorderableListView(
               onReorder: (int oldIndex, int newIndex) {
                 bool isLast = false;
@@ -71,7 +93,7 @@ class _TodosPageState extends State<TodosPage> {
           caption: '删除',
           color: Colors.red,
           icon: Icons.delete_forever,
-          onTap: () => mainStore.todosService.removeTodo(todo),
+          onTap: () => mainStore.todosService.removeTodo(todo.id),
         ),
       ],
       child: ListTile(

@@ -1,4 +1,9 @@
-import 'package:moor_flutter/moor_flutter.dart';
+import 'dart:io';
+
+import 'package:moor/moor.dart';
+import 'package:moor_ffi/moor_ffi.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 part 'todo.moor.g.dart';
 
@@ -17,10 +22,17 @@ class Todos extends Table {
   IntColumn get sort => integer().withDefault(const Constant(0))();
 }
 
+LazyDatabase _openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'db.sqlite'));
+    return VmDatabase(file);
+  });
+}
+
 @UseMoor(tables: [Todos], daos: [TodoDao])
 class TodosDatabase extends _$TodosDatabase {
-  TodosDatabase()
-      : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite'));
+  TodosDatabase() : super(_openConnection());
   @override
   int get schemaVersion => 3;
 
@@ -41,8 +53,10 @@ class TodosDatabase extends _$TodosDatabase {
         if (details.wasCreated) {
           List<Todo> todosData = await this.select(todos).get();
           for (var t in todosData) {
-            await customUpdate('UPDATE todos SET sort = id WHERE id = ?',
-                variables: [Variable.withInt(t.id)]);
+            await customUpdate(
+              'UPDATE todos SET sort = id WHERE id = ?',
+              variables: [Variable.withInt(t.id)],
+            );
           }
         }
       },
@@ -83,8 +97,10 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
   insertTodo(Insertable<Todo> todo) {
     return transaction(() async {
       final insertedId = await into(todos).insert(todo);
-      await customUpdate('UPDATE todos SET sort = id WHERE id = ?',
-          variables: [Variable.withInt(insertedId)]);
+      await (update(todos)..where((t) => t.id.equals(insertedId)))
+          .write(TodosCompanion(sort: Value(insertedId)));
+      // await customUpdate('UPDATE todos SET sort = id WHERE id = ?',
+      //     variables: [Variable.withInt(insertedId)]);
     });
   }
 
@@ -92,30 +108,20 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
   Future<bool> updateTodo(Insertable<Todo> todo) => update(todos).replace(todo);
 
   /// 删除一条数据
-  Future<int> deleteTodo(Insertable<Todo> todo) => delete(todos).delete(todo);
+  Future<int> deleteTodo(int id) =>
+      (delete(todos)..where((t) => t.id.equals(id))).go();
 
   /// 删除多条数据
-  void deleteTodos(List<int> dtodoIds) {
-    delete(todos)
-      ..where(
-        // (t) => isIn(t.id, dtodoIds),
-        (t) => t.id.isIn(dtodoIds),
-      )
-      ..go();
-  }
+  void deleteTodos(List<int> dtodoIds) => delete(todos)
+    ..where((t) => t.id.isIn(dtodoIds))
+    ..go();
 
   /// 软删除
-  removeTodo(Todo todo) =>
-      (update(todos)..where((t) => t.id.equals(todo.id))).write(
-        TodosCompanion(
-          isDelete: Value(true),
-        ),
+  removeTodo(int id) => (update(todos)..where((t) => t.id.equals(id))).write(
+        TodosCompanion(isDelete: Value(true)),
       );
-  unremoveTodo(Todo todo) =>
-      (update(todos)..where((t) => t.id.equals(todo.id))).write(
-        TodosCompanion(
-          isDelete: Value(false),
-        ),
+  unremoveTodo(int id) => (update(todos)..where((t) => t.id.equals(id))).write(
+        TodosCompanion(isDelete: Value(false)),
       );
 
   updateSort(Todo oldTodo, Todo newTodo, bool isLast) async {

@@ -15,29 +15,19 @@ abstract class _TodosService with Store {
 
   Stream<Todo> watchTodo(Todo todo) => _todoDao.watchTodo(todo);
 
-  insertTodo(Insertable<Todo> todo) {
-    return _todoDao.insertTodo(todo);
-  }
+  insertTodo(Insertable<Todo> todo) => _todoDao.insertTodo(todo);
 
-  deleteTodo(Insertable<Todo> todo) {
-    _todoDao.deleteTodo(todo);
-  }
+  /// 删除单个
+  deleteTodo(int id) => _todoDao.deleteTodo(id);
 
-  void deleteTodos(List<int> dtodoIds) {
-    _todoDao.deleteTodos(dtodoIds);
-  }
+  /// 删除多个
+  void deleteTodos(List<int> dtodoIds) => _todoDao.deleteTodos(dtodoIds);
 
-  Future<bool> updateTodo(Insertable<Todo> todo) {
-    return _todoDao.updateTodo(todo);
-  }
+  Future<bool> updateTodo(Insertable<Todo> todo) => _todoDao.updateTodo(todo);
 
-  Future<int> removeTodo(Insertable<Todo> todo) {
-    return _todoDao.removeTodo(todo);
-  }
+  Future<int> removeTodo(int id) => _todoDao.removeTodo(id);
 
-  Future<int> unremoveTodo(Insertable<Todo> todo) {
-    return _todoDao.unremoveTodo(todo);
-  }
+  Future<int> unremoveTodo(int id) => _todoDao.unremoveTodo(id);
 
   updateSort(Todo oldTodo, Todo newTodo, bool isLast) {
     // 顶置的只能和顶置的排序, 反之亦然
