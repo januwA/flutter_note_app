@@ -22,7 +22,7 @@ class TodoTitle extends StatelessWidget {
         ),
         Text(
           _createTimeString(todo.createTime),
-          style: Theme.of(context).textTheme.subtitle1,
+          style: Theme.of(context).textTheme.subhead,
         ),
       ],
     );

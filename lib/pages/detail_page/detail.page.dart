@@ -50,7 +50,7 @@ class DetailPage extends StatelessWidget {
           ListTile(
             title: Text(
               todo.title,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.display1,
             ),
             subtitle: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -62,7 +62,7 @@ class DetailPage extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       todo.content,
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.title,
                     ),
                   ),
                 ],

@@ -23,7 +23,7 @@ class _AppDrawerState extends State<AppDrawer> {
             padding: EdgeInsets.all(8.0),
             child: Text(
               '记事本',
-              style: Theme.of(context).textTheme.headline6.copyWith(
+              style: Theme.of(context).textTheme.title.copyWith(
                     color: Theme.of(context).accentColor,
                   ),
             ),
