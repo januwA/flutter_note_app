@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
+import 'package:flutter_note_app/router/router.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
 
-/// 添加待办事项page
-class AddPage extends StatefulWidget {
+/// 添加待办事项，或则编辑待办事项
+class EditPage extends StatefulWidget {
+  final Todo todo;
+
+  const EditPage({Key key, this.todo}) : super(key: key);
+
   @override
-  _AddPageState createState() => _AddPageState();
+  _EditPageState createState() => _EditPageState();
 }
 
-class _AddPageState extends State<AddPage> {
+class _EditPageState extends State<EditPage> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _contentController = TextEditingController(text: "");
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool get isEdit => widget.todo != null;
+  String get title => _titleController.text.trim();
+  String get content => _contentController.text.trim();
+
+  @override
+  void initState() {
+    super.initState();
+    if (isEdit) {
+      _titleController.text = widget.todo.title;
+      _contentController.text = widget.todo.content;
+    }
+  }
 
   @override
   void dispose() {
@@ -20,28 +38,49 @@ class _AddPageState extends State<AddPage> {
     _contentController.dispose();
   }
 
+  /// 编辑：更新todo
+  void _edit() {
+    mainStore.todosService.updateTodo(widget.todo.copyWith(
+      title: title,
+      content: content,
+    ));
+  }
+
+  /// 新增：添加todo
+  void _add() {
+    var newTodo = TodosCompanion.insert(
+      title: title,
+      content: content,
+      createTime: DateTime.now(),
+    );
+    mainStore.todosService.insertTodo(newTodo);
+  }
+
+  /// 清理input内容
+  _clean() {
+    _titleController.clear();
+    _contentController.clear();
+  }
+
+  _publish() {
+    if (_formKey.currentState.validate()) {
+      if (isEdit) {
+        _edit();
+      } else {
+        _add();
+      }
+      router.pop();
+      _clean();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('添加待办事项'),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.send),
-            onPressed: () {
-              if (_formKey.currentState.validate()) {
-                var newTodo = TodosCompanion.insert(
-                  title: _titleController.text.trim(),
-                  content: _contentController.text.trim(),
-                  createTime: DateTime.now(),
-                );
-                mainStore.todosService.insertTodo(newTodo);
-                Navigator.of(context).pop();
-                _titleController.clear();
-                _contentController.clear();
-              }
-            },
-          ),
+          IconButton(icon: Icon(Icons.send), onPressed: _publish),
         ],
       ),
       body: Form(

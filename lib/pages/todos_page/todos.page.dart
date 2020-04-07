@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
+import 'package:flutter_note_app/router/router.dart';
 import 'package:flutter_note_app/shared/widgets/app_drawer.dart';
 import 'package:flutter_note_app/shared/widgets/todo_subtitle.dart';
 import 'package:flutter_note_app/shared/widgets/todo_title.dart';
@@ -77,7 +78,7 @@ class _TodosPageState extends State<TodosPage> {
               children: todos.map((t) => _todoItemView(t, context)).toList(),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).pushNamed('/add-todo'),
+        onPressed: () => Navigator.of(context).pushNamed('/edit-todo'),
         child: Icon(Icons.add),
       ),
     );
@@ -97,9 +98,7 @@ class _TodosPageState extends State<TodosPage> {
         ),
       ],
       child: ListTile(
-        onTap: () {
-          Navigator.of(context).pushNamed('/detail-todo', arguments: todo);
-        },
+        onTap: () => router.pushNamed('/detail-todo', arguments: todo.id),
         title: TodoTitle(todo: todo),
         subtitle: TodoSubtitle(todo: todo),
       ),

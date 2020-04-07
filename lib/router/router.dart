@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ajanuw_router/ajanuw_route.dart';
 import 'package:flutter_ajanuw_router/flutter_ajanuw_router.dart';
-import 'package:flutter_note_app/pages/add_page/add_page.dart';
 import 'package:flutter_note_app/pages/batch_delete_todos/batch_delete_todos.dart';
 import 'package:flutter_note_app/pages/delete_todos/delete_todos_page.dart';
 import 'package:flutter_note_app/pages/detail_page/detail.page.dart';
+import 'package:flutter_note_app/pages/edit_page/edit_page.dart';
 import 'package:flutter_note_app/pages/not-found/not-found.dart';
 import 'package:flutter_note_app/pages/todos_page/todos.page.dart';
 
@@ -21,33 +21,34 @@ final List<AjanuwRoute> routes = [
     path: 'todos',
     builder: (context, r) => TodosPage(),
   ),
-  AjanuwRoute(
-      path: 'add-todo',
-      builder: (context, r) => AddPage(),
-      transitionDuration: Duration(milliseconds: 500),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        var curvedAnimation = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeInOut,
-        );
-
-        return SlideTransition(
-          position: Tween(
-            begin: Offset(0.0, 0.7),
-            end: Offset.zero,
-          ).animate(curvedAnimation),
-          child: ScaleTransition(
-            scale: Tween<double>(
-              begin: 0.0,
-              end: 1.0,
-            ).animate(curvedAnimation),
-            child: child,
-          ),
-        );
-      }),
   AjanuwRoute<Todo>(
+    path: 'edit-todo',
+    builder: (context, r) => EditPage(todo: r.arguments),
+    transitionDuration: Duration(milliseconds: 500),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      var curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOut,
+      );
+
+      return SlideTransition(
+        position: Tween(
+          begin: Offset(0.0, 0.7),
+          end: Offset.zero,
+        ).animate(curvedAnimation),
+        child: ScaleTransition(
+          scale: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(curvedAnimation),
+          child: child,
+        ),
+      );
+    },
+  ),
+  AjanuwRoute<int>(
     path: 'detail-todo',
-    builder: (context, r) => DetailPage(todo: r.arguments),
+    builder: (context, r) => DetailPage(id: r.arguments),
   ),
   AjanuwRoute(
     path: 'delete-todos',

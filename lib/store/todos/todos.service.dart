@@ -13,7 +13,7 @@ abstract class _TodosService with Store {
   Stream<List<Todo>> get todos$ => _todoDao.watchNotDeleteTodos();
   Stream<List<Todo>> get deleteTodos$ => _todoDao.watchDeleteTodos();
 
-  Stream<Todo> watchTodo(Todo todo) => _todoDao.watchTodo(todo);
+  Stream<Todo> watchTodo(int id) => _todoDao.watchTodo(id);
 
   insertTodo(Insertable<Todo> todo) => _todoDao.insertTodo(todo);
 

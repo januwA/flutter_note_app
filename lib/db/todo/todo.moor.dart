@@ -89,8 +89,9 @@ class TodoDao extends DatabaseAccessor<TodosDatabase> with _$TodoDaoMixin {
   Stream<List<Todo>> watchDeleteTodos() =>
       (select(todos)..where((t) => t.isDelete.equals(true))).watch();
 
-  Stream<Todo> watchTodo(Todo todo) =>
-      (select(todos)..where((t) => t.id.equals(todo.id))).watchSingle();
+  /// 监听一个todo的变更
+  Stream<Todo> watchTodo(int id) =>
+      (select(todos)..where((t) => t.id.equals(id))).watchSingle();
 
   /// 插入一条数据
   /// v3: 插入时把sort字段设置为id字段
