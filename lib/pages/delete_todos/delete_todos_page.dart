@@ -36,7 +36,15 @@ class _DeleteTodosPageState extends State<DeleteTodosPage> {
           List<Todo> todos = snap.data;
           if (todos == null || todos.isEmpty) {
             return Center(
-              child: Text('not data.'),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/empty.jpg'),
+                  SizedBox(height: 12),
+                  Text('没有任何内容', style: Theme.of(context).textTheme.subtitle1,),
+                ],
+              ),
             );
           }
           List<DeleteTodo> deleteTodos =

@@ -44,6 +44,53 @@ class Todo extends DataClass implements Insertable<Todo> {
       sort: intType.mapFromDatabaseResponse(data['${effectivePrefix}sort']),
     );
   }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || title != null) {
+      map['title'] = Variable<String>(title);
+    }
+    if (!nullToAbsent || content != null) {
+      map['content'] = Variable<String>(content);
+    }
+    if (!nullToAbsent || createTime != null) {
+      map['create_time'] = Variable<DateTime>(createTime);
+    }
+    if (!nullToAbsent || isTop != null) {
+      map['is_top'] = Variable<bool>(isTop);
+    }
+    if (!nullToAbsent || isDelete != null) {
+      map['is_delete'] = Variable<bool>(isDelete);
+    }
+    if (!nullToAbsent || sort != null) {
+      map['sort'] = Variable<int>(sort);
+    }
+    return map;
+  }
+
+  TodosCompanion toCompanion(bool nullToAbsent) {
+    return TodosCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      title:
+          title == null && nullToAbsent ? const Value.absent() : Value(title),
+      content: content == null && nullToAbsent
+          ? const Value.absent()
+          : Value(content),
+      createTime: createTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createTime),
+      isTop:
+          isTop == null && nullToAbsent ? const Value.absent() : Value(isTop),
+      isDelete: isDelete == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDelete),
+      sort: sort == null && nullToAbsent ? const Value.absent() : Value(sort),
+    );
+  }
+
   factory Todo.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
@@ -69,27 +116,6 @@ class Todo extends DataClass implements Insertable<Todo> {
       'isDelete': serializer.toJson<bool>(isDelete),
       'sort': serializer.toJson<int>(sort),
     };
-  }
-
-  @override
-  TodosCompanion createCompanion(bool nullToAbsent) {
-    return TodosCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      title:
-          title == null && nullToAbsent ? const Value.absent() : Value(title),
-      content: content == null && nullToAbsent
-          ? const Value.absent()
-          : Value(content),
-      createTime: createTime == null && nullToAbsent
-          ? const Value.absent()
-          : Value(createTime),
-      isTop:
-          isTop == null && nullToAbsent ? const Value.absent() : Value(isTop),
-      isDelete: isDelete == null && nullToAbsent
-          ? const Value.absent()
-          : Value(isDelete),
-      sort: sort == null && nullToAbsent ? const Value.absent() : Value(sort),
-    );
   }
 
   Todo copyWith(
@@ -175,6 +201,26 @@ class TodosCompanion extends UpdateCompanion<Todo> {
   })  : title = Value(title),
         content = Value(content),
         createTime = Value(createTime);
+  static Insertable<Todo> custom({
+    Expression<int> id,
+    Expression<String> title,
+    Expression<String> content,
+    Expression<DateTime> createTime,
+    Expression<bool> isTop,
+    Expression<bool> isDelete,
+    Expression<int> sort,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (content != null) 'content': content,
+      if (createTime != null) 'create_time': createTime,
+      if (isTop != null) 'is_top': isTop,
+      if (isDelete != null) 'is_delete': isDelete,
+      if (sort != null) 'sort': sort,
+    });
+  }
+
   TodosCompanion copyWith(
       {Value<int> id,
       Value<String> title,
@@ -192,6 +238,47 @@ class TodosCompanion extends UpdateCompanion<Todo> {
       isDelete: isDelete ?? this.isDelete,
       sort: sort ?? this.sort,
     );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (createTime.present) {
+      map['create_time'] = Variable<DateTime>(createTime.value);
+    }
+    if (isTop.present) {
+      map['is_top'] = Variable<bool>(isTop.value);
+    }
+    if (isDelete.present) {
+      map['is_delete'] = Variable<bool>(isDelete.value);
+    }
+    if (sort.present) {
+      map['sort'] = Variable<int>(sort.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TodosCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('content: $content, ')
+          ..write('createTime: $createTime, ')
+          ..write('isTop: $isTop, ')
+          ..write('isDelete: $isDelete, ')
+          ..write('sort: $sort')
+          ..write(')'))
+        .toString();
   }
 }
 
@@ -282,41 +369,44 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
   @override
   final String actualTableName = 'todos';
   @override
-  VerificationContext validateIntegrity(TodosCompanion d,
+  VerificationContext validateIntegrity(Insertable<Todo> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     }
-    if (d.title.present) {
+    if (data.containsKey('title')) {
       context.handle(
-          _titleMeta, title.isAcceptableValue(d.title.value, _titleMeta));
+          _titleMeta, title.isAcceptableOrUnknown(data['title'], _titleMeta));
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
-    if (d.content.present) {
+    if (data.containsKey('content')) {
       context.handle(_contentMeta,
-          content.isAcceptableValue(d.content.value, _contentMeta));
+          content.isAcceptableOrUnknown(data['content'], _contentMeta));
     } else if (isInserting) {
       context.missing(_contentMeta);
     }
-    if (d.createTime.present) {
-      context.handle(_createTimeMeta,
-          createTime.isAcceptableValue(d.createTime.value, _createTimeMeta));
+    if (data.containsKey('create_time')) {
+      context.handle(
+          _createTimeMeta,
+          createTime.isAcceptableOrUnknown(
+              data['create_time'], _createTimeMeta));
     } else if (isInserting) {
       context.missing(_createTimeMeta);
     }
-    if (d.isTop.present) {
+    if (data.containsKey('is_top')) {
       context.handle(
-          _isTopMeta, isTop.isAcceptableValue(d.isTop.value, _isTopMeta));
+          _isTopMeta, isTop.isAcceptableOrUnknown(data['is_top'], _isTopMeta));
     }
-    if (d.isDelete.present) {
+    if (data.containsKey('is_delete')) {
       context.handle(_isDeleteMeta,
-          isDelete.isAcceptableValue(d.isDelete.value, _isDeleteMeta));
+          isDelete.isAcceptableOrUnknown(data['is_delete'], _isDeleteMeta));
     }
-    if (d.sort.present) {
+    if (data.containsKey('sort')) {
       context.handle(
-          _sortMeta, sort.isAcceptableValue(d.sort.value, _sortMeta));
+          _sortMeta, sort.isAcceptableOrUnknown(data['sort'], _sortMeta));
     }
     return context;
   }
@@ -327,33 +417,6 @@ class $TodosTable extends Todos with TableInfo<$TodosTable, Todo> {
   Todo map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
     return Todo.fromData(data, _db, prefix: effectivePrefix);
-  }
-
-  @override
-  Map<String, Variable> entityToSql(TodosCompanion d) {
-    final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
-    }
-    if (d.title.present) {
-      map['title'] = Variable<String, StringType>(d.title.value);
-    }
-    if (d.content.present) {
-      map['content'] = Variable<String, StringType>(d.content.value);
-    }
-    if (d.createTime.present) {
-      map['create_time'] = Variable<DateTime, DateTimeType>(d.createTime.value);
-    }
-    if (d.isTop.present) {
-      map['is_top'] = Variable<bool, BoolType>(d.isTop.value);
-    }
-    if (d.isDelete.present) {
-      map['is_delete'] = Variable<bool, BoolType>(d.isDelete.value);
-    }
-    if (d.sort.present) {
-      map['sort'] = Variable<int, IntType>(d.sort.value);
-    }
-    return map;
   }
 
   @override
@@ -379,5 +442,5 @@ abstract class _$TodosDatabase extends GeneratedDatabase {
 // **************************************************************************
 
 mixin _$TodoDaoMixin on DatabaseAccessor<TodosDatabase> {
-  $TodosTable get todos => db.todos;
+  $TodosTable get todos => attachedDatabase.todos;
 }

@@ -24,7 +24,7 @@ class _TodosPageState extends State<TodosPage> {
           case ConnectionState.waiting:
             return Scaffold(body: Center(child: CircularProgressIndicator()));
           case ConnectionState.active:
-            return _buildBody(snap.data);
+            return _buildBody(snap.data ?? []);
           default:
             return Scaffold(body: SizedBox());
         }

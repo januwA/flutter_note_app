@@ -73,7 +73,7 @@ class DetailPage extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            title: Text(todo.title, style: theme.textTheme.display1),
+            title: Text(todo.title, style: theme.textTheme.headline3),
             subtitle: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -84,7 +84,7 @@ class DetailPage extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       todo.content,
-                      style: theme.textTheme.title,
+                      style: theme.textTheme.headline6,
                     ),
                   ),
                 ],

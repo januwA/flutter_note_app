@@ -15,7 +15,7 @@ class EditPage extends StatefulWidget {
 
 class _EditPageState extends State<EditPage> {
   TextEditingController _titleController = TextEditingController();
-  TextEditingController _contentController = TextEditingController(text: "");
+  TextEditingController _contentController = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool get isEdit => widget.todo != null;
@@ -85,7 +85,7 @@ class _EditPageState extends State<EditPage> {
       ),
       body: Form(
         key: _formKey,
-        autovalidate: true,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         onWillPop: () async {
           return true;
         },
@@ -108,6 +108,7 @@ class _EditPageState extends State<EditPage> {
                 child: TextFormField(
                   controller: _contentController,
                   keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.unspecified, // 能够换行
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "内容",
