@@ -107,13 +107,13 @@ class _EditPageState extends State<EditPage> {
                 fit: FlexFit.tight,
                 child: TextFormField(
                   controller: _contentController,
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                   textInputAction: TextInputAction.unspecified, // 能够换行
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "内容",
                       contentPadding: EdgeInsets.only(top: 14.0)),
-                  maxLines: null,
                 ),
               ),
             ],
