@@ -6,6 +6,7 @@ import 'package:flutter_note_app/pages/delete_todos/delete_todos_page.dart';
 import 'package:flutter_note_app/pages/detail_page/detail.page.dart';
 import 'package:flutter_note_app/pages/edit_page/edit_page.dart';
 import 'package:flutter_note_app/pages/not-found/not-found.dart';
+import 'package:flutter_note_app/pages/preview_page.dart';
 import 'package:flutter_note_app/pages/todos_page/todos.page.dart';
 
 import '../db/todo/todo.moor.dart';
@@ -53,6 +54,10 @@ final List<AjanuwRoute> routes = [
   AjanuwRoute(
     path: 'delete-todos',
     builder: (context, r) => DeleteTodosPage(),
+  ),
+  AjanuwRoute(
+    path: 'preview',
+    builder: (context, r) => PreviewPage(text: r.arguments),
   ),
   AjanuwRoute<List<DeleteTodo>>(
     path: 'batch-delete-todos',

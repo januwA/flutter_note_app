@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/router/router.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
@@ -53,6 +54,7 @@ class DetailPage extends StatelessWidget {
     bool isSelect = todo.isTop;
     return Scaffold(
       appBar: AppBar(
+        title: Text('详情'),
         actions: <Widget>[
           IconButton(
             icon: isSelect
@@ -70,27 +72,23 @@ class DetailPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            title: Text(todo.title, style: theme.textTheme.headline3),
-            subtitle: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('${todo.createTime.toString().split('.').first}'),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      todo.content,
-                      style: theme.textTheme.headline6,
-                    ),
-                  ),
-                ],
-              ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(todo.title, style: theme.textTheme.headline4),
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text('${todo.createTime.toString().split('.').first}'),
             ),
           ),
+          Expanded(child: Markdown(data: todo.content)),
         ],
       ),
     );

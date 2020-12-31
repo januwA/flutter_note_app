@@ -2,7 +2,7 @@ name: flutter_note_app
 description: 记事本app
 
 publish_to: 'none' 
-version: 1.4.2
+version: 1.5.0
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
@@ -19,6 +19,8 @@ dependencies:
   flutter_github_releases_service: ^0.4.2
   flutter_slidable: ^0.5.4
   flutter_ajanuw_router: ^0.3.4
+  flutter_markdown: ^0.5.1
+  flutter_svg: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +33,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/markdown_icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -59,9 +59,7 @@ class _AppDrawerState extends State<AppDrawer> {
               if (snapshot.connectionState == ConnectionState.active) {
                 List<Todo> dts = snapshot.data;
                 return ListTile(
-                  onTap: () {
-                    Navigator.of(context).popAndPushNamed('/delete-todos');
-                  },
+                  onTap: () => Navigator.of(context).popAndPushNamed('/delete-todos'),
                   leading: Icon(Icons.delete),
                   title: Text('已删除待办事项'),
                   trailing: Text('${dts.length}'),
@@ -99,7 +97,10 @@ class _AppDrawerState extends State<AppDrawer> {
                       : null,
                 );
               }
-              return ListTile(title: Text('wait loading...'));
+              return ListTile(
+                leading: Icon(Icons.sync),
+                title: Text('wait loading'),
+              );
             },
           );
         } else {

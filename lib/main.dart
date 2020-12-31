@@ -11,6 +11,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '',
       title: '记事本',
       theme: ThemeData(primarySwatch: Colors.blue),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        accentColor: Colors.orange,
+      ),
       navigatorObservers: [router.navigatorObserver],
       navigatorKey: router.navigatorKey,
       onGenerateRoute: onGenerateRoute,
