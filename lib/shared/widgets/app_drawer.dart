@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
-import 'package:flutter_note_app/pages/todos_page/todos.page.dart';
+import 'package:flutter_note_app/pages/todos.page.dart';
 import 'package:flutter_note_app/router/router.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
 

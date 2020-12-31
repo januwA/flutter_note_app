@@ -4,7 +4,7 @@ import 'package:flutter_note_app/router/router.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../router/router.dart';
+import '../router/router.dart';
 
 /// 添加待办事项，或则编辑待办事项
 class EditPage extends StatefulWidget {
@@ -44,6 +44,9 @@ class _EditPageState extends State<EditPage> {
   /// 向context编辑器中新添加一行
   void _addLine(String text) {
     _contentController.text += '\n$text';
+    // 更新光标位置
+    _contentController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _contentController.text.length));
   }
 
   /// 编辑：更新todo

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/router/router.dart';
 import 'package:flutter_note_app/shared/widgets/app_drawer.dart';
-import 'package:flutter_note_app/shared/widgets/todo_subtitle.dart';
 import 'package:flutter_note_app/shared/widgets/todo_title.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -85,23 +84,42 @@ class _TodosPageState extends State<TodosPage> {
     );
   }
 
-  Slidable _todoItemView(Todo todo, BuildContext context) {
-    return Slidable(
+  Widget _todoItemView(Todo todo, BuildContext context) {
+    return Padding(
       key: ValueKey(todo.id),
-      actionPane: SlidableDrawerActionPane(),
-      actionExtentRatio: 0.25,
-      secondaryActions: <Widget>[
-        IconSlideAction(
-          caption: '删除',
-          color: Colors.red,
-          icon: Icons.delete_forever,
-          onTap: () => mainStore.todosService.removeTodo(todo.id),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Slidable(
+        actionPane: SlidableDrawerActionPane(),
+        actionExtentRatio: 0.25,
+        secondaryActions: <Widget>[
+          IconSlideAction(
+            caption: '删除',
+            color: Colors.red,
+            icon: Icons.delete_forever,
+            onTap: () => mainStore.todosService.removeTodo(todo.id),
+          ),
+        ],
+        child: ListTile(
+          onTap: () => router.pushNamed('/detail-todo', arguments: todo.id),
+          title: TodoTitle(todo: todo),
+          trailing: IconButton(
+            icon: todo.isTop
+                ? Icon(
+                    Icons.star,
+                    color: Colors.red[400],
+                  )
+                : Icon(
+                    Icons.star_border,
+                    color: Colors.grey[400],
+                  ),
+            onPressed: () {
+              if (todo.isDelete) return;
+              mainStore.todosService
+                  .updateTodo(todo.copyWith(isTop: !todo.isTop));
+            },
+          ),
+          // subtitle: TodoSubtitle(todo: todo),
         ),
-      ],
-      child: ListTile(
-        onTap: () => router.pushNamed('/detail-todo', arguments: todo.id),
-        title: TodoTitle(todo: todo),
-        subtitle: TodoSubtitle(todo: todo),
       ),
     );
   }

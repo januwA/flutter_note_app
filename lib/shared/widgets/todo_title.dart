@@ -17,9 +17,10 @@ class TodoTitle extends StatelessWidget {
           child: Text(
             todo.title,
             overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+            maxLines: 2,
           ),
         ),
+        SizedBox(width: 4.0),
         Text(
           _createTimeString(todo.createTime),
           style: Theme.of(context).textTheme.subtitle1,

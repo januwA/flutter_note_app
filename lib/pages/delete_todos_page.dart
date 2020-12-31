@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_note_app/db/todo/todo.moor.dart';
 import 'package:flutter_note_app/shared/widgets/app_drawer.dart';
-import 'package:flutter_note_app/shared/widgets/todo_subtitle.dart';
 import 'package:flutter_note_app/shared/widgets/todo_title.dart';
 import 'package:flutter_note_app/store/main/main.store.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -66,7 +65,7 @@ class _DeleteTodosPageState extends State<DeleteTodosPage> {
           actionExtentRatio: 0.25,
           child: ListTile(
             title: TodoTitle(todo: dtodo.todo),
-            subtitle: TodoSubtitle(todo: dtodo.todo),
+            // subtitle: TodoSubtitle(todo: dtodo.todo),
             onLongPress: () {
               setState(() {
                 dtodo.value = true;

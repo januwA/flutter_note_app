@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../router/router.dart';
-import '../../shared/widgets/todo_subtitle.dart';
-import '../../shared/widgets/todo_title.dart';
-import '../../store/main/main.store.dart';
-import '../delete_todos/delete_todos_page.dart';
+import '../router/router.dart';
+import '../shared/widgets/todo_title.dart';
+import '../store/main/main.store.dart';
+import 'delete_todos_page.dart';
 
 class BatchDeleteTodos extends StatefulWidget {
   final List<DeleteTodo> deleteTodos;
@@ -48,7 +47,7 @@ class _BatchDeleteTodosState extends State<BatchDeleteTodos> {
           return CheckboxListTile(
             value: dtodo.value,
             title: TodoTitle(todo: dtodo.todo),
-            subtitle: TodoSubtitle(todo: dtodo.todo),
+            // subtitle: TodoSubtitle(todo: dtodo.todo),
             onChanged: (bool value) {
               setState(() {
                 dtodo.value = value;
